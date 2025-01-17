@@ -1,7 +1,9 @@
-import React from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+"use client";
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 import {
   Sheet,
   SheetClose,
@@ -11,50 +13,79 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
+} from "@/components/ui/sheet";
+import Image from "next/image";
+import Link from "next/link";
+import { sidebarLinks } from "@/constants";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
-export function SheetDemo() {
+const MobileNav = ({ user }: MobileNavProps) => {
+  const pathname = usePathname();
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="outline">Open</Button>
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Edit profile</SheetTitle>
-          <SheetDescription>
-            Make changes to your profile here. Click save when you're done.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
+    <section className="w-full max-w-[264px]">
+      <Sheet>
+        <SheetTrigger>
+          <Image
+            className="cursor-pointer"
+            src="/icons/hamburger.svg"
+            width={30}
+            height={30}
+            alt="menu"
+          />
+        </SheetTrigger>
+        <SheetContent side={"left"} className="border-none bg-white">
+          <Link
+            href={"/"}
+            className="flex cursor-pointer items-center gap-1 px-4"
+          >
+            <Image src="/icons/logo.svg" width={34} height={34} alt="Horizon" />
+            <h1 className="text-26 font-ibm-plex-serif font-bold text-black-1">
+              Horizon
+            </h1>
+          </Link>
+          <div className="mobilenav-sheet">
+            <SheetClose asChild>
+              <nav className="flex h-full flex-col gap-6 pt-16 text-white">
+                {sidebarLinks.map((item) => {
+                  const isActive =
+                    pathname === item.route || pathname.startsWith(item.route);
+                  return (
+                    <SheetClose asChild key={item.route}>
+                      <Link
+                        className={cn("mobilenav-sheet_close w-full", {
+                          "bg-bank-gradient": isActive,
+                        })}
+                        href={item.route}
+                        key={item.label}
+                      >
+                          <Image
+                            className={cn("brightness-[0] invert-0:isActive  ")}
+                            src={item.imgURL}
+                            width={20}
+                            height={20}
+                            alt={item.label}
+                          />
+                        <p
+                          className={cn("text-16 font-semibold text-black-2 text-white", {
+                            "text-white": isActive,
+                          })}
+                        >
+                          {item.label}
+                        </p>
+                      </Link>
+                    </SheetClose>
+                  );
+                })}
+                USER
+              </nav>
+            </SheetClose>
+            FOOTER
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
-          </div>
-        </div>
-        <SheetFooter>
-          <SheetClose asChild>
-            <Button type="submit">Save changes</Button>
-          </SheetClose>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
-  )
-}
+        </SheetContent>
+      </Sheet>
+    </section>
+  );
+};
 
-
-const MobileNav = ({user}:MobileNavProps) => {
-  return (
-    <div>MobileNav</div>
-  )
-}
-
-export default MobileNav
+export default MobileNav;
