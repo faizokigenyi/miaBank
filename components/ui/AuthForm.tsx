@@ -20,8 +20,12 @@ import {
 import { Input } from "@/components/ui/input";
 import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { signUp } from "@/lib/actions/user.actions";
 
 function AuthForm({ type }: { type: string }) {
+
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [isloading, setisLoading] = useState(false);
 
@@ -36,12 +40,34 @@ function AuthForm({ type }: { type: string }) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit= async  (data: z.infer<typeof formSchema>)=> {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     setisLoading(true);
-    console.log(values);
-    setisLoading(false);
+    try {   
+        // sign up with upwrite and create a plaid link toke
+        if (type === "sign-up"){
+           const newUser = await signUp(data)
+           setUser(newUser)
+
+        }
+        if (type === "sign-in"){        
+            // const response = await signIn({
+            //     email: data.email,
+            //     password: data.password
+            // })
+
+            // if (response){
+            //     router.push("/")
+            // }
+        }
+
+
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setisLoading(false);
+    }
   }
   return (
     <section className="auth-form">
@@ -97,6 +123,12 @@ function AuthForm({ type }: { type: string }) {
                     name="address1"
                     label="Address"
                     placeholder="Enter your specific address"
+                  />
+                   <CustomInput
+                    control={form.control}
+                    name="city"
+                    label="city"
+                    placeholder="Enter your City"
                   />
                   <div className="flex gap-4 ">
                     <CustomInput
