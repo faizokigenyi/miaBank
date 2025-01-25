@@ -21,13 +21,13 @@ import { Input } from "@/components/ui/input";
 import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { signUp } from "@/lib/actions/user.actions";
+import { signIn, signUp } from "@/lib/actions/user.actions";
 
 function AuthForm({ type }: { type: string }) {
-
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [isloading, setisLoading] = useState(false);
+  // if (!user) redirect("/signup");
 
   const formSchema = authFormSchema(type);
 
@@ -40,35 +40,34 @@ function AuthForm({ type }: { type: string }) {
     },
   });
 
-  const onSubmit= async  (data: z.infer<typeof formSchema>)=> {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setisLoading(true);
-    try {   
-        // sign up with upwrite and create a plaid link toke
-        if (type === "sign-up"){
-           const newUser = await signUp(data)
-           setUser(newUser)
 
+    try {
+      // sign up with appwrite and createa plaid link token
+      if (type === "sign-up") {
+        const newUser = await signUp(data);
+        setUser(newUser);
+      }
+      if (type === "sign-in") {
+        const response = await signIn({
+          email: data.email,
+          password: data.password,
+        });
+
+        if (response) {
+          router.push("/");
         }
-        if (type === "sign-in"){        
-            // const response = await signIn({
-            //     email: data.email,
-            //     password: data.password
-            // })
-
-            // if (response){
-            //     router.push("/")
-            // }
-        }
-
-
+      }
+      console.log(data);
+      setisLoading(false);
     } catch (error) {
       console.log(error);
-    }finally{
+      setisLoading(false);
+    } finally {
       setisLoading(false);
     }
-  }
+  };
   return (
     <section className="auth-form">
       <header className="flex flex-col gap-5 md:gap-8">
@@ -124,7 +123,7 @@ function AuthForm({ type }: { type: string }) {
                     label="Address"
                     placeholder="Enter your specific address"
                   />
-                   <CustomInput
+                  <CustomInput
                     control={form.control}
                     name="city"
                     label="city"
@@ -198,7 +197,7 @@ function AuthForm({ type }: { type: string }) {
             <p className="text-14 font-normal text-gray-600">
               {type === "sign-in"
                 ? "Don't have an account?"
-                : "Already have an account?"}{" "}
+                : "Already have an account?"}
             </p>
             <Link
               className="form-link"
