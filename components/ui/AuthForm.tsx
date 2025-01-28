@@ -22,6 +22,7 @@ import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { signIn, signUp } from "@/lib/actions/user.actions";
+import PlaidLink from "@/components/ui/PlaidLink";
 
 function AuthForm({ type }: { type: string }) {
   const router = useRouter();
@@ -45,8 +46,22 @@ function AuthForm({ type }: { type: string }) {
 
     try {
       // sign up with appwrite and createa plaid link token
+      const userData = {
+        firstName: data.firstName!,
+        lastName: data.lastName!,
+        address1: data.address1!,
+        city: data.city!,
+        state: data.state!,
+        postalCode: data.postalCode!,
+        dateOfBirth: data.dateOfBirth!,
+        ssn: data.ssn!,
+        email: data.email,
+        password: data.password,
+      }
+
+
       if (type === "sign-up") {
-        const newUser = await signUp(data);
+        const newUser = await signUp(userData);
         setUser(newUser);
       }
       if (type === "sign-in") {
@@ -94,7 +109,9 @@ function AuthForm({ type }: { type: string }) {
         </div>
       </header>
       {user ? (
-        <div className="flex flex-col gap-4 md:gap-8">{/* {plaidLink} */}</div>
+        <div className="flex flex-col gap-4 md:gap-8">
+          <PlaidLink  user={user} variant="primary"/>
+        </div>
       ) : (
         <>
           {" "}
