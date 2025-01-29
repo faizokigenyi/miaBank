@@ -99,6 +99,7 @@ export async function getLoggedInUser() {
       const user = await account.get();
       return parseStringify(user);
     } catch (error) {
+      console.log(error)
       return null;
     }
   }
@@ -106,7 +107,7 @@ export async function getLoggedInUser() {
 export const logOutAccount = async () => {
   try {
     const { account } = await createSessionClient();
-    cookies().delete("appwrite-session");
+    (await cookies()).delete("appwrite-session");
     await account.deleteSession("current");
   } catch (error) {
     console.log(error);
@@ -161,7 +162,9 @@ export const createBankAccount = async ({userId,
 
     return parseStringify(bankAccount);
   }
-  catch (error) {}
+  catch (error) {
+    console.log(error)
+  }
 }
 
 export const exchangePublicToken = async ({publicToken, user}:exchangePublicTokenProps) => {  
