@@ -9,7 +9,11 @@ import { create } from "domain";
 import { Link } from "lucide-react";
 import { StyledString } from "next/dist/build/swc/types";
 import { useRouter } from "next/navigation";
-import { createLinkToken, exchangePublicToken } from "@/lib/actions/user.actions";
+import {
+  createLinkToken,
+  exchangePublicToken,
+} from "@/lib/actions/user.actions";
+import Image from "next/image";
 
 const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
   const router = useRouter();
@@ -26,7 +30,7 @@ const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
 
   const onSuccess = useCallback<PlaidLinkOnSuccess>(
     async (publicToken: string) => {
-      await exchangePublicToken({publicToken, user});
+      await exchangePublicToken({ publicToken, user });
       router.push("/");
     },
     [user]
@@ -50,9 +54,29 @@ const PlaidLink = ({ user, variant }: PlaidLinkProps) => {
           Connect bank
         </Button>
       ) : variant === "ghost" ? (
-        <Button variant="ghost">Connect bank</Button>
+        <Button
+          variant="ghost"
+          onClick={() => open()}
+          className="plaidlink-ghost"
+        >
+          <Image
+            src="/icons/connect-bank.svg"
+            width={24}
+            height={24}
+            alt="connect bank"
+          />
+          <p className="text-hidden xl:block md:text-[16px] font-semibold text-black-2">Connect bank</p>
+        </Button>
       ) : (
-        <Button>Connect bank</Button>
+        <Button onClick={() => open()} className="plaidlink-default">
+          <Image
+            src="/icons/connect-bank.svg"
+            width={24}
+            height={24}
+            alt="connect bank"
+          />
+          <p className="text-[16px] font-semibold text-black-2">Connect bank</p>
+        </Button>
       )}
     </>
   );
